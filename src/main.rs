@@ -1,3 +1,6 @@
 fn main() {
-    println!("Hello, world!");
+    use lib::{Config, PasswordGenerator};
+    println!("Generating Password...");
+    let config = Config::default();
+    println!("{}", config.generate(10));
 }
