@@ -48,6 +48,7 @@ impl Default for Config {
     }
 }
 
+use clap::{App, Arg};
 impl Config {
     pub fn new(
         enable_lower: bool,
@@ -101,6 +102,41 @@ impl Config {
             }
         }
         result
+    }
+    pub fn from_args() -> Self {
+        let matches = App::new("Password Generator")
+            .about("Generate a randomized password string.")
+            .arg(
+                Arg::with_name("no_lower")
+                    .short("l")
+                    .long("no-lower")
+                    .help("Disable lowercase characters ([a-z])"),
+            )
+            .arg(
+                Arg::with_name("no_upper")
+                    .short("u")
+                    .long("no-upper")
+                    .help("Disable uppercase characters ([A-Z])"),
+            )
+            .arg(
+                Arg::with_name("no_number")
+                    .short("n")
+                    .long("no-number")
+                    .help("Disable numerical characters ([0-9])"),
+            )
+            .arg(
+                Arg::with_name("symbol")
+                    .short("s")
+                    .long("symbol")
+                    .help("Enable symbolic characters"),
+            )
+            .get_matches();
+        Config {
+            enable_lower: !matches.is_present("no_lower"),
+            enable_upper: !matches.is_present("no_upper"),
+            enable_numerical: !matches.is_present("no_number"),
+            enable_special: matches.is_present("symbol"),
+        }
     }
 }
 
