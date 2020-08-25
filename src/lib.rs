@@ -35,6 +35,7 @@ pub struct Config {
     enable_upper: bool,
     enable_numerical: bool,
     enable_special: bool,
+    pub length: usize,
 }
 
 impl Default for Config {
@@ -44,6 +45,7 @@ impl Default for Config {
             enable_upper: true,
             enable_numerical: true,
             enable_special: false,
+            length: 10,
         }
     }
 }
@@ -55,12 +57,14 @@ impl Config {
         enable_upper: bool,
         enable_numerical: bool,
         enable_special: bool,
+        length: usize,
     ) -> Self {
         Config {
             enable_lower,
             enable_upper,
             enable_numerical,
             enable_special,
+            length,
         }
     }
     pub fn get_state(&self, c_type: &CharType) -> bool {
@@ -130,12 +134,25 @@ impl Config {
                     .long("symbol")
                     .help("Enable symbolic characters"),
             )
+            .arg(
+                Arg::with_name("length")
+                    .short("c")
+                    .long("length")
+                    .takes_value(true)
+                    .value_name("LENGTH")
+                    .help("The number of characters composing the password"),
+            )
             .get_matches();
+
         Config {
             enable_lower: !matches.is_present("no_lower"),
             enable_upper: !matches.is_present("no_upper"),
             enable_numerical: !matches.is_present("no_number"),
             enable_special: matches.is_present("symbol"),
+            length: match matches.value_of("length") {
+                Some(l) => l.parse().expect("Invalid length argument supplied."),
+                None => 10,
+            },
         }
     }
 }
@@ -240,10 +257,10 @@ mod tests {
 
     #[test]
     fn test_config_to_vec() {
-        let conf = Config::new(false, false, false, false);
+        let conf = Config::new(false, false, false, false, 10);
         let empty: Vec<u8> = Vec::new();
         assert_eq!(empty, conf.to_vec());
-        let mut conf = Config::new(false, false, true, false);
+        let mut conf = Config::new(false, false, true, false, 10);
         assert_eq!("0123456789".as_bytes().to_vec(), conf.to_vec());
         conf.set_state(&CharType::Lowercase, true);
         conf.set_state(&CharType::Uppercase, true);
