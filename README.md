@@ -10,4 +10,6 @@ Characters are grouped into the following types:
 * Numerical
 * Special
 
+## Example
 
+![Example](./example.png)
